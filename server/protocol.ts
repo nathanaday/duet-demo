@@ -1,4 +1,4 @@
-import type { AgentEvent, ApprovalSetting, Harness, PermissionDecision } from '../../src/index.ts';
+import type { AgentEvent, ApprovalSetting, Harness, PermissionDecision } from 'obsidian-duet';
 
 export type { AgentEvent, ApprovalSetting, Harness, PermissionDecision };
 

@@ -65,9 +65,13 @@ async function api<T>(method: string, path: string, body?: unknown): Promise<T> 
     headers: body ? { 'Content-Type': 'application/json' } : undefined,
     body: body ? JSON.stringify(body) : undefined,
   });
-  const payload = await response.json().catch(() => ({}));
-  if (!response.ok) throw new Error(payload.error ?? `Request failed with status ${response.status}`);
+  const payload: unknown = await response.json().catch(() => undefined);
+  if (!response.ok) throw new Error(errorOf(payload) ?? `Request failed with status ${response.status}`);
   return payload as T;
+}
+
+function errorOf(payload: unknown): string | undefined {
+  return payload && typeof payload === 'object' && 'error' in payload && typeof payload.error === 'string' ? payload.error : undefined;
 }
 
 export async function loadInfo(): Promise<void> {
@@ -121,7 +125,7 @@ function connect(id: string): void {
   source?.close();
   source = new EventSource(`/api/sessions/${id}/events`);
   let lastSeq = -1;
-  source.onmessage = (message) => {
+  source.onmessage = (message: MessageEvent<string>) => {
     const envelope = JSON.parse(message.data) as Envelope;
     // The server replays the whole log when the stream reconnects.
     if (envelope.seq <= lastSeq) return;

@@ -14,7 +14,7 @@ import {
   harnessEnvironment,
   type PermissionDecision,
   type PermissionRequest,
-} from '../../src/index.ts';
+} from 'obsidian-duet';
 import type { DemoInfo, Envelope, Harness, SessionInfo, StartRequest, WireEvent } from './protocol.ts';
 
 const SAMPLE_VAULT = fileURLToPath(new URL('../sample-vault', import.meta.url));
@@ -103,11 +103,11 @@ export function agentApi(): Plugin {
     hosted.session = await createSession({
       harness: request.harness,
       cwd,
-      clientName: 'obsidian-duet-demo',
+      clientName: 'duet-demo',
       resume: request.resume || undefined,
       onPermission: hosted.askPermission,
       ...harnessOptions(request),
-    } as CreateSessionOptions);
+    });
     hosted.session.on((event) => hosted.push(event));
     sessions.set(hosted.session.id, hosted);
     return hosted.info();
